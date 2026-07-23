@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
-// เปลี่ยน URL นี้เป็น Railway URL จริงของแอป
-const APP_URL = process.env.APP_URL || "https://orderme-production.up.railway.app";
+// แอปจริงอยู่ที่ app.ordermeapp.com (ตั้ง APP_URL บน Railway Variables ได้)
+const APP_URL = process.env.APP_URL || "https://app.ordermeapp.com";
 
 const nextConfig: NextConfig = {
   async redirects() {
