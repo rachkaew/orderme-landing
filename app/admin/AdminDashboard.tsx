@@ -213,40 +213,6 @@ export default function AdminDashboard({ initial }: Props) {
               />
             </Section>
 
-            <Section title="ตัวเลข (Social Proof)">
-              {content.stats.map((s, i) => (
-                <div key={i} className="grid grid-cols-3 gap-2 mb-2">
-                  <Field
-                    label="ค่า"
-                    value={s.value}
-                    onChange={(v) => {
-                      const stats = [...content.stats];
-                      stats[i] = { ...stats[i], value: v };
-                      setContent({ ...content, stats });
-                    }}
-                  />
-                  <Field
-                    label="ชื่อ"
-                    value={s.label}
-                    onChange={(v) => {
-                      const stats = [...content.stats];
-                      stats[i] = { ...stats[i], label: v };
-                      setContent({ ...content, stats });
-                    }}
-                  />
-                  <Field
-                    label="คำอธิบาย"
-                    value={s.sub}
-                    onChange={(v) => {
-                      const stats = [...content.stats];
-                      stats[i] = { ...stats[i], sub: v };
-                      setContent({ ...content, stats });
-                    }}
-                  />
-                </div>
-              ))}
-            </Section>
-
             <Section title="ฟีเจอร์">
               <Field
                 label="หัวข้อ"

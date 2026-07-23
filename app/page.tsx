@@ -1,6 +1,5 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import SocialProof from "./components/SocialProof";
 import Features from "./components/Features";
 import HowItWorks from "./components/HowItWorks";
 import Pricing from "./components/Pricing";
@@ -19,7 +18,6 @@ export default async function Home() {
       <Navbar />
       <main>
         <Hero content={content.hero} />
-        <SocialProof stats={content.stats} />
         <Features content={content.features} />
         <HowItWorks content={content.howItWorks} />
         <Pricing content={content.pricing} />
