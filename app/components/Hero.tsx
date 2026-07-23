@@ -2,12 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight, Play, Smartphone, MessageCircle, CheckCircle } from "lucide-react";
-
-const badges = [
-  "PWA ติดตั้งได้ทันที",
-  "ไม่ต้องโหลดแอป",
-  "ฟรี 30 วัน",
-];
+import type { SiteContent } from "@/lib/content";
 
 const chatBubbles = [
   { from: "customer", text: "สวัสดีค่ะ ขอก๋วยเตี๋ยวเส้นใหญ่ น้ำใส ไม่เผ็ด 1 ชาม" },
@@ -24,17 +19,12 @@ function PhoneMockup() {
       transition={{ duration: 0.7, delay: 0.3, ease: "easeOut" }}
       className="relative"
     >
-      {/* Phone shell */}
       <div className="relative mx-auto w-64 md:w-72">
         <div className="rounded-[2.5rem] border-4 border-gray-800 bg-gray-800 shadow-2xl overflow-hidden">
-          {/* Notch */}
           <div className="bg-gray-800 flex justify-center pt-2 pb-1">
             <div className="w-20 h-5 bg-black rounded-full" />
           </div>
-
-          {/* Screen */}
           <div className="bg-primary-50 min-h-[480px] flex flex-col">
-            {/* Chat header */}
             <div className="bg-white px-4 py-3 flex items-center gap-3 border-b border-gray-100">
               <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center">
                 <span className="text-white text-xs font-bold">O</span>
@@ -44,8 +34,6 @@ function PhoneMockup() {
                 <p className="text-[10px] text-green-500">● ออนไลน์</p>
               </div>
             </div>
-
-            {/* Bubbles */}
             <div className="flex-1 px-3 py-3 flex flex-col gap-2 overflow-hidden">
               {chatBubbles.map((b, i) => (
                 <motion.div
@@ -67,8 +55,6 @@ function PhoneMockup() {
                 </motion.div>
               ))}
             </div>
-
-            {/* Input bar */}
             <div className="bg-white px-3 py-2 flex items-center gap-2 border-t border-gray-100">
               <div className="flex-1 bg-gray-100 rounded-full px-3 py-1.5">
                 <span className="text-[10px] text-gray-400">พิมพ์ข้อความ...</span>
@@ -78,14 +64,11 @@ function PhoneMockup() {
               </div>
             </div>
           </div>
-
-          {/* Home indicator */}
           <div className="bg-gray-800 flex justify-center py-2">
             <div className="w-24 h-1 bg-gray-600 rounded-full" />
           </div>
         </div>
 
-        {/* Floating badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -110,25 +93,22 @@ function PhoneMockup() {
   );
 }
 
-export default function Hero() {
+export default function Hero({ content }: { content: SiteContent["hero"] }) {
   return (
     <section className="relative min-h-screen bg-gradient-to-b from-primary-50 via-white to-white flex items-center pt-20 pb-12 overflow-hidden">
-      {/* Decorative blobs */}
       <div className="absolute top-20 right-0 w-96 h-96 bg-primary-100 rounded-full blur-3xl opacity-40 -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-80 h-80 bg-orange-50 rounded-full blur-3xl opacity-60" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 w-full">
         <div className="grid md:grid-cols-2 gap-12 md:gap-8 items-center">
-          {/* Text side */}
           <div>
-            {/* Badge row */}
             <motion.div
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
               className="flex flex-wrap gap-2 mb-6"
             >
-              {badges.map((b) => (
+              {content.badges.map((b) => (
                 <span
                   key={b}
                   className="text-xs font-medium px-3 py-1 rounded-full bg-primary-100 text-primary-700"
@@ -138,33 +118,28 @@ export default function Hero() {
               ))}
             </motion.div>
 
-            {/* Headline */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl sm:text-5xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-5"
             >
-              สั่งอาหารง่าย
+              {content.titleLine1}
               <br />
-              <span className="text-primary-500">แค่แชท</span>
+              <span className="text-primary-500">{content.titleHighlight}</span>
               <br />
-              ไม่ต้องโหลดแอป
+              {content.titleLine3}
             </motion.h1>
 
-            {/* Sub */}
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-lg text-gray-500 leading-relaxed mb-8 max-w-md"
             >
-              ระบบรับออเดอร์ผ่านแชทสำหรับร้านอาหาร
-              รองรับหลายสาขา ชำระเงินด้วย QR Code
-              ลูกค้าเปิดผ่านเบราว์เซอร์ได้ทันที
+              {content.subtitle}
             </motion.p>
 
-            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -175,7 +150,7 @@ export default function Hero() {
                 href="/app"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-primary-500 text-white font-semibold hover:bg-primary-600 transition-colors text-sm shadow-lg shadow-primary-200"
               >
-                ทดลองใช้ฟรี 30 วัน
+                {content.primaryCta}
                 <ArrowRight size={16} />
               </a>
               <a
@@ -183,11 +158,10 @@ export default function Hero() {
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-white text-gray-700 font-semibold hover:bg-gray-50 transition-colors text-sm border border-gray-200"
               >
                 <Play size={14} className="text-primary-500" />
-                ดูวิธีการใช้งาน
+                {content.secondaryCta}
               </a>
             </motion.div>
 
-            {/* Trust line */}
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -195,11 +169,10 @@ export default function Hero() {
               className="mt-6 text-xs text-gray-400 flex items-center gap-1.5"
             >
               <MessageCircle size={13} className="text-primary-400" />
-              ไม่ต้องใช้บัตรเครดิต · ยกเลิกได้ทุกเมื่อ · ตั้งค่าภายใน 10 นาที
+              {content.trustLine}
             </motion.p>
           </div>
 
-          {/* Phone mockup */}
           <div className="flex justify-center md:justify-end">
             <PhoneMockup />
           </div>

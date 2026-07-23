@@ -7,6 +7,7 @@ const navLinks = [
   { label: "ฟีเจอร์", href: "#features" },
   { label: "วิธีใช้", href: "#how-it-works" },
   { label: "ราคา", href: "#pricing" },
+  { label: "คู่มือ", href: "#manuals" },
   { label: "ติดต่อ", href: "#contact" },
 ];
 

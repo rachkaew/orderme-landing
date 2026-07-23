@@ -1,17 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useInView } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
+import type { SiteContent } from "@/lib/content";
 
-const stats = [
-  { value: "100+", label: "ร้านค้าที่ใช้งาน", sub: "ทั่วประเทศ" },
-  { value: "5,000+", label: "ออเดอร์ต่อวัน", sub: "เฉลี่ยทุกวัน" },
-  { value: "4.9", label: "คะแนนพึงพอใจ", sub: "จากเจ้าของร้าน" },
-  { value: "∞", label: "จำนวนสาขา", sub: "ไม่จำกัด" },
-];
-
-export default function SocialProof() {
+export default function SocialProof({ stats }: { stats: SiteContent["stats"] }) {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
 
