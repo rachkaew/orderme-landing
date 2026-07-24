@@ -2,10 +2,39 @@
 
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
-import { ScanQrCode, ShoppingCart, CheckCheck } from "lucide-react";
 import type { SiteContent } from "@/lib/content";
 
-const icons = [ScanQrCode, ShoppingCart, CheckCheck];
+/** แผ่นภาพ 4 คอลัมน์ × 3 แถว */
+function Scene({
+  col,
+  row,
+  className = "",
+}: {
+  col: number;
+  row: number;
+  className?: string;
+}) {
+  const x = (col / 3) * 100;
+  const y = (row / 2) * 100;
+  return (
+    <div
+      className={`bg-no-repeat ${className}`}
+      style={{
+        backgroundImage: "url(/illustrations/orderme-journey.png)",
+        backgroundSize: "400% 300%",
+        backgroundPosition: `${x}% ${y}%`,
+      }}
+      aria-hidden
+    />
+  );
+}
+
+/** คอลัมน์ภาพที่สื่อแต่ละขั้น: เปิดเมนู / สั่ง / รับอาหาร */
+const stepScenes = [
+  { col: 0, row: 0 },
+  { col: 3, row: 0 },
+  { col: 3, row: 1 },
+];
 
 export default function HowItWorks({ content }: { content: SiteContent["howItWorks"] }) {
   const ref = useRef(null);
@@ -27,11 +56,11 @@ export default function HowItWorks({ content }: { content: SiteContent["howItWor
           <p className="text-gray-500 max-w-md mx-auto text-base">{content.subtitle}</p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 relative">
-          <div className="hidden md:block absolute top-14 left-1/6 right-1/6 h-px bg-primary-200" />
+        <div className="grid md:grid-cols-3 gap-8 relative mb-16">
+          <div className="hidden md:block absolute top-20 left-[16%] right-[16%] h-px bg-primary-200" />
 
           {content.steps.map((s, i) => {
-            const Icon = icons[i % icons.length];
+            const scene = stepScenes[i % stepScenes.length];
             const step = String(i + 1).padStart(2, "0");
             return (
               <motion.div
@@ -41,11 +70,13 @@ export default function HowItWorks({ content }: { content: SiteContent["howItWor
                 transition={{ duration: 0.5, delay: 0.1 + i * 0.15 }}
                 className="flex flex-col items-center text-center"
               >
-                <div className="relative mb-6">
-                  <div className="w-16 h-16 rounded-2xl bg-primary-500 flex items-center justify-center shadow-lg shadow-primary-200">
-                    <Icon size={28} className="text-white" />
-                  </div>
-                  <span className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-white border-2 border-primary-500 text-primary-600 text-[10px] font-bold flex items-center justify-center">
+                <div className="relative mb-5">
+                  <Scene
+                    col={scene.col}
+                    row={scene.row}
+                    className="w-28 h-28 sm:w-32 sm:h-32 rounded-3xl shadow-md shadow-primary-100 ring-2 ring-white"
+                  />
+                  <span className="absolute -top-2 -right-2 w-7 h-7 rounded-full bg-primary-500 text-white text-[11px] font-bold flex items-center justify-center shadow">
                     {step}
                   </span>
                 </div>
@@ -58,6 +89,28 @@ export default function HowItWorks({ content }: { content: SiteContent["howItWor
             );
           })}
         </div>
+
+        {/* แผ่นภาพรวมเส้นทางลูกค้า */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 0.35 }}
+          className="max-w-3xl mx-auto"
+        >
+          <p className="text-center text-sm font-medium text-primary-600 mb-4">
+            จากเปิดแอป → สั่ง → จ่าย → รับอาหาร → ให้ดาว
+          </p>
+          <div className="rounded-3xl overflow-hidden border border-primary-100 bg-white shadow-sm">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/illustrations/orderme-journey.png"
+              alt="เส้นทางใช้งาน OrderMe ตั้งแต่เลือกเมนูจนถึงให้คะแนน"
+              className="w-full h-auto"
+              width={1024}
+              height={1024}
+            />
+          </div>
+        </motion.div>
       </div>
     </section>
   );
