@@ -147,7 +147,7 @@ export default function Hero({ content }: { content: SiteContent["hero"] }) {
               className="flex flex-wrap gap-3"
             >
               <a
-                href="/app"
+                href="/signup"
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-primary-500 text-white font-semibold hover:bg-primary-600 transition-colors text-sm shadow-lg shadow-primary-200"
               >
                 {content.primaryCta}

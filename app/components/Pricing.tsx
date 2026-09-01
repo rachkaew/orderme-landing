@@ -105,7 +105,7 @@ export default function Pricing({ content }: { content: SiteContent["pricing"] }
                 </ul>
 
                 <a
-                  href={plan.name === "Enterprise" ? "#contact" : "/app"}
+                  href={plan.name === "Enterprise" ? "#contact" : "/signup"}
                   className={`w-full py-3 rounded-xl text-center text-sm font-semibold transition-colors ${ctaStyle}`}
                 >
                   {plan.cta}

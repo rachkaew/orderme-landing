@@ -12,7 +12,7 @@
   --color-primary-800: #9a3412;
   --color-primary-900: #7c2d12;
 
-  --font-sans: var(--font-ibm-plex-sans-thai);
+  --font-sans: "IBM Plex Sans Thai", system-ui, sans-serif;
 }
 
 * {
@@ -24,7 +24,7 @@ html {
 }
 
 body {
-  font-family: var(--font-sans), "IBM Plex Sans Thai", system-ui, sans-serif;
+  font-family: var(--font-sans);
   background: #ffffff;
   color: #1a1a1a;
   -webkit-font-smoothing: antialiased;

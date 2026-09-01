@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans_Thai } from "next/font/google";
 import "./globals.css";
-
-const ibmPlexSansThai = IBM_Plex_Sans_Thai({
-  variable: "--font-ibm-plex-sans-thai",
-  subsets: ["thai", "latin"],
-  weight: ["300", "400", "500", "600", "700"],
-});
 
 export const metadata: Metadata = {
   title: "OrderMe — สั่งอาหารง่าย แค่แชท ไม่ต้องโหลดแอป",
@@ -25,7 +18,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={`${ibmPlexSansThai.variable} scroll-smooth`}>
+    <html lang="th" className="scroll-smooth">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="min-h-screen bg-white antialiased">{children}</body>
     </html>
   );

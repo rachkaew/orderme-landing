@@ -35,7 +35,7 @@ export default function CTA({ cta, contact }: Props) {
 
           <div className="flex flex-wrap gap-4 justify-center mb-12">
             <a
-              href="/app"
+              href="/signup"
               className="inline-flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-white text-primary-600 font-semibold hover:bg-primary-50 transition-colors text-sm"
             >
               {cta.primaryCta}

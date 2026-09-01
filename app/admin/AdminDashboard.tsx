@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
 import type { SiteContent } from "@/lib/content";
+import AdminApplications from "./AdminApplications";
 
 type Props = { initial: SiteContent };
 
@@ -47,7 +48,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 export default function AdminDashboard({ initial }: Props) {
   const router = useRouter();
   const [content, setContent] = useState<SiteContent>(initial);
-  const [tab, setTab] = useState<"text" | "manuals">("text");
+  const [tab, setTab] = useState<"text" | "manuals" | "applications">("applications");
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
   const [uploadTitle, setUploadTitle] = useState("");
@@ -130,7 +131,15 @@ export default function AdminDashboard({ initial }: Props) {
       </header>
 
       <main className="max-w-3xl mx-auto px-4 py-6">
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-4">
+          <button
+            onClick={() => setTab("applications")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium ${
+              tab === "applications" ? "bg-primary-500 text-white" : "bg-white border border-gray-200"
+            }`}
+          >
+            คำขอเปิดร้าน
+          </button>
           <button
             onClick={() => setTab("text")}
             className={`px-4 py-2 rounded-xl text-sm font-medium ${
@@ -154,6 +163,8 @@ export default function AdminDashboard({ initial }: Props) {
             {msg}
           </p>
         )}
+
+        {tab === "applications" && <AdminApplications onMsg={setMsg} />}
 
         {tab === "text" && (
           <>

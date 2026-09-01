@@ -60,10 +60,10 @@ export default function Navbar() {
             เข้าสู่ระบบ
           </a>
           <a
-            href="/app"
+            href="/signup"
             className="text-sm font-semibold px-4 py-2 rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-colors"
           >
-            ทดลองฟรี
+            สมัครเปิดร้าน
           </a>
         </div>
 
@@ -92,11 +92,11 @@ export default function Navbar() {
               </a>
             ))}
             <a
-              href="/app"
+              href="/signup"
               onClick={() => setOpen(false)}
               className="mt-2 py-2.5 text-center text-sm font-semibold rounded-xl bg-primary-500 text-white hover:bg-primary-600 transition-colors"
             >
-              ทดลองใช้ฟรี 30 วัน
+              สมัครเปิดร้าน
             </a>
           </nav>
         </div>
