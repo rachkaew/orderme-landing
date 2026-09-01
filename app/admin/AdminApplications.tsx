@@ -20,6 +20,8 @@ type Application = {
   adminNote: string;
   managerUsername: string | null;
   credentialsSentAt: string | null;
+  branchId?: number | null;
+  shopCreatedAt?: string | null;
 };
 
 const statusLabel: Record<string, string> = {
@@ -38,6 +40,8 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
   const [adminNote, setAdminNote] = useState("");
   const [busy, setBusy] = useState(false);
 
+  const [ordermeReady, setOrdermeReady] = useState(true);
+
   const load = useCallback(async () => {
     setLoading(true);
     const res = await fetch("/api/admin/applications");
@@ -48,6 +52,7 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
     }
     const data = await res.json();
     setApps(data.applications || []);
+    setOrdermeReady(data.ordermeCreateConfigured !== false);
   }, [onMsg]);
 
   useEffect(() => {
@@ -61,7 +66,7 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
     setAdminNote(a.adminNote || "");
   }
 
-  async function act(action: "approve" | "reject" | "resend_credentials") {
+  async function act(action: "approve" | "reject" | "resend_credentials" | "create_shop") {
     if (!selected) return;
     setBusy(true);
     const res = await fetch("/api/admin/applications", {
@@ -81,11 +86,13 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
       onMsg(data.error || "ดำเนินการไม่สำเร็จ");
       return;
     }
-    onMsg(
-      action === "reject"
-        ? "ปฏิเสธ / ยกเลิกคำขอแล้ว — ผู้สมัครสามารถกรอกฟอร์มใหม่ได้"
-        : "ส่งอีเมล username + คู่มือแล้ว · อย่าลืมสร้างร้านในแอพ Admin ด้วยข้อมูลชุดเดียวกัน"
-    );
+    const messages: Record<string, string> = {
+      reject: "ปฏิเสธ / ยกเลิกคำขอแล้ว — ผู้สมัครสามารถกรอกฟอร์มใหม่ได้",
+      approve: "สร้างร้านในแอพ + ส่งอีเมล username แล้ว",
+      create_shop: "สร้างร้านในแอพแล้ว — ลองล็อกอินด้วย username ที่ส่งไป",
+      resend_credentials: "ส่งอีเมลอีกครั้งแล้ว",
+    };
+    onMsg(data.message || messages[action] || "สำเร็จ");
     setSelected(data.application || null);
     await load();
   }
@@ -113,7 +120,12 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
           </button>
         </div>
         <p className="text-xs text-gray-500 mb-4">
-          ขั้นตอนอนุมัติ: 1) สร้างร้านในแอพ OrderMe Admin ด้วยข้อมูลชุดนี้ 2) กดส่งอีเมล username + คู่มือจากหน้านี้
+          กด <strong>อนุมัติ</strong> = สร้างร้านในแอพ OrderMe อัตโนมัติ + ส่งอีเมล username
+          {!ordermeReady && (
+            <span className="block mt-1 text-red-600">
+              ยังไม่ได้ตั้ง ORDERME_SYSTEM_KEY — สร้างร้านอัตโนมัติยังใช้ไม่ได้
+            </span>
+          )}
         </p>
 
         {loading ? (
@@ -156,8 +168,12 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
               <dd>{statusLabel[selected.status] || selected.status}</dd>
             </div>
             <div>
-              <dt className="text-xs text-gray-400">แพ็กเกจ</dt>
-              <dd>{selected.plan}</dd>
+              <dt className="text-xs text-gray-400">สถานะร้านในแอพ</dt>
+              <dd>
+                {selected.shopCreatedAt || selected.branchId
+                  ? `สร้างแล้ว${selected.branchId ? ` · branch #${selected.branchId}` : ""}`
+                  : "ยังไม่สร้างในแอพ"}
+              </dd>
             </div>
             <div>
               <dt className="text-xs text-gray-400">Slug</dt>
@@ -231,7 +247,17 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
                     onClick={() => act("approve")}
                     className="px-4 py-2 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 disabled:opacity-50"
                   >
-                    อนุมัติ + ส่งอีเมล
+                    อนุมัติ · สร้างร้าน + ส่งอีเมล
+                  </button>
+                )}
+                {selected.status === "approved" && !selected.shopCreatedAt && !selected.branchId && (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => act("create_shop")}
+                    className="px-4 py-2 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 disabled:opacity-50"
+                  >
+                    สร้างร้านในแอพตอนนี้
                   </button>
                 )}
                 {(selected.status === "pending_verification" ||
@@ -252,7 +278,7 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
                     type="button"
                     disabled={busy}
                     onClick={() => act("resend_credentials")}
-                    className="px-4 py-2 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 disabled:opacity-50"
+                    className="px-4 py-2 rounded-xl border border-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-50 disabled:opacity-50"
                   >
                     ส่งอีเมลอีกครั้ง
                   </button>

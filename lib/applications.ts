@@ -36,6 +36,9 @@ export type ShopApplication = {
   approvedAt: string | null;
   credentialsSentAt: string | null;
   rejectedAt: string | null;
+  /** สร้างในแอพ OrderMe แล้ว */
+  branchId: number | null;
+  shopCreatedAt: string | null;
 };
 
 type Store = { applications: ShopApplication[] };
@@ -186,6 +189,8 @@ export async function createApplication(input: CreateApplicationInput) {
     approvedAt: null,
     credentialsSentAt: null,
     rejectedAt: null,
+    branchId: null,
+    shopCreatedAt: null,
   };
   const store = await readStore();
   store.applications.unshift(app);

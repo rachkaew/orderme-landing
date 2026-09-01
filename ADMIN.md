@@ -17,7 +17,16 @@
 | `EMAIL_FROM` | `OrderMe <noreply@ordermeapp.com>` | โดเมนต้อง **Verify** ใน Resend Domains |
 | `SITE_URL` | `https://www.ordermeapp.com` | ใช้สร้างลิงก์ยืนยันอีเมล |
 | `ADMIN_NOTIFY_EMAIL` | อีเมลทีมงาน | แจ้งเมื่อมีคำขอใหม่หลังยืนยันอีเมล |
-| `APP_LOGIN_URL` | `https://app.ordermeapp.com` | ใส่ในอีเมลส่ง username |
+| `ORDERME_API_URL` | `https://app.ordermeapp.com` | API แอพสำหรับสร้างร้านตอนอนุมัติ |
+| `ORDERME_SYSTEM_KEY` | ค่าเดียวกับ `SYSTEM_KEY` ของ service **orderme** | **จำเป็น** ถ้าไม่มี จะส่งเมลได้แต่สร้างร้านในแอพไม่ได้ |
+
+### อนุมัติร้าน (สำคัญ)
+
+กด **อนุมัติ** ที่ `/admin` จะ:
+1. เรียก `POST /api/system/branches` สร้างร้าน + username `{slug}_manager` ในแอพ
+2. ส่งอีเมล username + คู่มือให้ลูกค้า
+
+ถ้าเคยส่งเมลไปแล้วแต่ยังไม่มีร้านในแอพ → เปิดคำขอนั้น กด **สร้างร้านในแอพตอนนี้** (ใส่รหัสผ่านให้ตรงกับที่ส่งไป)
 
 ### ตั้งค่า Resend ให้ส่งเมลได้
 
