@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   createApplication,
+  findActiveByEmail,
   findPendingByEmail,
   isValidEmail,
   isValidPhone,
@@ -62,8 +63,20 @@ export async function POST(req: Request) {
   }
 
   const existing = await findPendingByEmail(email);
+  const active = await findActiveByEmail(email);
 
-  // มีคำขอรอยืนยันอีเมล → ส่งลิงก์ใหม่ (ไม่บล็อก)
+  // อีเมลนี้เคยอนุมัติแล้ว → ห้ามสมัครซ้ำ
+  if (active?.status === "approved") {
+    return NextResponse.json(
+      {
+        error:
+          "อีเมลนี้เคยสมัครและอนุมัติแล้ว กรุณาเข้าสู่ระบบด้วย username ที่ได้รับ หรือติดต่อทีมงาน",
+      },
+      { status: 409 }
+    );
+  }
+
+  // มีคำขอรอยืนยันอีเมล → ส่งลิงก์ใหม่ (อัปเดตคำขอเดิม ไม่สร้างซ้ำ)
   if (existing?.status === "pending_verification") {
     if (await slugTaken(slug, existing.id)) {
       return NextResponse.json({ error: "slug นี้มีคนใช้แล้ว หรือรอตรวจสอบอยู่" }, { status: 409 });

@@ -135,6 +135,17 @@ export async function findPendingByEmail(email: string) {
   );
 }
 
+/** อีเมลที่มีคำขอที่ไม่ใช่ rejected (รวม approved แล้ว) */
+export async function findActiveByEmail(email: string) {
+  const e = email.trim().toLowerCase();
+  const store = await readStore();
+  return (
+    store.applications.find(
+      (a) => a.email.toLowerCase() === e && a.status !== "rejected"
+    ) || null
+  );
+}
+
 /** สร้าง token ยืนยันใหม่ (ใช้เมื่อส่งอีเมลซ้ำ) */
 export async function refreshVerification(appId: string) {
   const token = randomBytes(24).toString("hex");
