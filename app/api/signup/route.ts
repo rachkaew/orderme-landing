@@ -40,7 +40,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "กรุณากรอกอีเมลให้ถูกต้อง" }, { status: 400 });
   }
   if (!slug || slug.length < 2) {
-    return NextResponse.json({ error: "กรุณากรอก slug (ภาษาอังกฤษ/ตัวเลข) อย่างน้อย 2 ตัวอักษร" }, { status: 400 });
+    return NextResponse.json(
+      { error: "กรุณากรอก slug (ภาษาอังกฤษ/ตัวเลข) อย่างน้อย 2 ตัวอักษร" },
+      { status: 400 }
+    );
   }
   if (!applicantFirstName || !applicantLastName) {
     return NextResponse.json({ error: "กรุณากรอกชื่อและนามสกุลผู้สมัคร" }, { status: 400 });
@@ -52,7 +55,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "เบอร์โทรร้านต้องเป็น 10 หลัก ขึ้นต้นด้วย 0" }, { status: 400 });
   }
   if (applicantPhone && !isValidPhone(applicantPhone)) {
-    return NextResponse.json({ error: "เบอร์โทรผู้สมัครต้องเป็น 10 หลัก ขึ้นต้นด้วย 0" }, { status: 400 });
+    return NextResponse.json(
+      { error: "เบอร์โทรผู้สมัครต้องเป็น 10 หลัก ขึ้นต้นด้วย 0" },
+      { status: 400 }
+    );
   }
 
   const existing = await findPendingByEmail(email);
@@ -81,7 +87,10 @@ export async function POST(req: Request) {
     const mail = await sendVerificationEmail(app);
     if (!mail.ok) {
       return NextResponse.json(
-        { error: "ส่งอีเมลยืนยันไม่สำเร็จ กรุณาลองใหม่หรือติดต่อทีมงาน", detail: mail.error },
+        {
+          error: `ส่งอีเมลยืนยันไม่สำเร็จ: ${mail.error || "unknown"}`,
+          detail: mail.error,
+        },
         { status: 502 }
       );
     }
@@ -126,8 +135,16 @@ export async function POST(req: Request) {
 
   const mail = await sendVerificationEmail(app);
   if (!mail.ok) {
+    await updateApplication(app.id, {
+      status: "rejected",
+      rejectedAt: new Date().toISOString(),
+      adminNote: `auto-reject: ส่งอีเมลไม่สำเร็จ (${mail.error || "unknown"})`,
+    });
     return NextResponse.json(
-      { error: "ส่งอีเมลยืนยันไม่สำเร็จ กรุณาลองใหม่หรือติดต่อทีมงาน", detail: mail.error },
+      {
+        error: `ส่งอีเมลยืนยันไม่สำเร็จ: ${mail.error || "unknown"} — ตรวจ RESEND_API_KEY / EMAIL_FROM บน Railway`,
+        detail: mail.error,
+      },
       { status: 502 }
     );
   }

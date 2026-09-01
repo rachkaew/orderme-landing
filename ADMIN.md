@@ -13,11 +13,24 @@
 | `ADMIN_PASSWORD` | รหัสผ่านที่แข็งแรง | **จำเป็น** |
 | `ADMIN_SECRET` | สตริงสุ่มยาวๆ | แนะนำ (เซ็น cookie) |
 | `DATA_DIR` | `/data` | เก็บข้อความ + ไฟล์คู่มือ + คำขอเปิดร้าน |
-| `RESEND_API_KEY` | `re_...` | **จำเป็นสำหรับสมัครเปิดร้าน** (ส่งอีเมลยืนยัน + แจ้ง username) |
-| `EMAIL_FROM` | `OrderMe <noreply@ordermeapp.com>` | โดเมนต้อง verify ใน Resend |
+| `RESEND_API_KEY` | `re_...` **คีย์เต็มจาก Resend** (ยาวมาก ไม่ใช่แค่ `re_xxxx` สั้นๆ) | **จำเป็น** — ถ้าผิดอีเมลจะไม่ไป |
+| `EMAIL_FROM` | `OrderMe <noreply@ordermeapp.com>` | โดเมนต้อง **Verify** ใน Resend Domains |
 | `SITE_URL` | `https://www.ordermeapp.com` | ใช้สร้างลิงก์ยืนยันอีเมล |
 | `ADMIN_NOTIFY_EMAIL` | อีเมลทีมงาน | แจ้งเมื่อมีคำขอใหม่หลังยืนยันอีเมล |
 | `APP_LOGIN_URL` | `https://app.ordermeapp.com` | ใส่ในอีเมลส่ง username |
+
+### ตั้งค่า Resend ให้ส่งเมลได้
+
+1. เปิด [https://resend.com/api-keys](https://resend.com/api-keys) → **Create API Key** → คัดลอกคีย์ทั้งหมด (ขึ้นต้น `re_` และยาว)
+2. วางใน Railway Variable `RESEND_API_KEY` (อย่าตัดกลางคัน)
+3. ไป [Domains](https://resend.com/domains) → Add `ordermeapp.com` → ใส่ DNS ที่ Porkbun ตามที่ Resend บอก → รอสถานะ **Verified**
+4. ตั้ง `EMAIL_FROM` เป็นอีเมลบนโดเมนนั้น เช่น `OrderMe <noreply@ordermeapp.com>`
+5. **Redeploy / Restart** service `orderme-landing`
+
+**ทดสอบเร็วโดยยังไม่ verify โดเมน:** ใช้ `EMAIL_FROM=OrderMe <onboarding@resend.dev>`  
+(ส่งได้เฉพาะไปยังอีเมลเจ้าของบัญชี Resend เท่านั้น)
+
+Log บน Railway ที่เจอตอนนี้: `API key is invalid` → คีย์ที่ใส่ยังไม่ใช่คีย์จริง/วางไม่ครบ
 
 ## Volume บน Railway (สำคัญมาก)
 

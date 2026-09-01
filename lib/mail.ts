@@ -23,8 +23,19 @@ export function mailConfigured() {
 async function send(opts: { to: string; subject: string; html: string; text: string }) {
   const resend = getResend();
   if (!resend) {
-    console.log("[mail:console]", opts.to, opts.subject, opts.text.slice(0, 200));
-    return { ok: true as const, mode: "console" as const };
+    console.error("[mail] RESEND_API_KEY ยังไม่ได้ตั้ง — ไม่ได้ส่งอีเมลจริง");
+    return {
+      ok: false as const,
+      error: "ยังไม่ได้ตั้ง RESEND_API_KEY บนเซิร์ฟเวอร์",
+    };
+  }
+  const key = process.env.RESEND_API_KEY || "";
+  if (key.length < 20) {
+    console.error("[mail] RESEND_API_KEY สั้นผิดปกติ — น่าจะวางไม่ครบ");
+    return {
+      ok: false as const,
+      error: "RESEND_API_KEY ไม่ถูกต้องหรือวางไม่ครบจาก Resend Dashboard",
+    };
   }
   const { error } = await resend.emails.send({
     from: fromAddress(),
@@ -35,7 +46,8 @@ async function send(opts: { to: string; subject: string; html: string; text: str
   });
   if (error) {
     console.error("[mail:resend]", error);
-    return { ok: false as const, error: error.message };
+    const msg = error.message || "ส่งอีเมลไม่สำเร็จ";
+    return { ok: false as const, error: msg };
   }
   return { ok: true as const, mode: "resend" as const };
 }
