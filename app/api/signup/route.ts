@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import {
   createApplication,
-  emailPending,
+  findPendingByEmail,
   isValidEmail,
   isValidPhone,
   normalizeSlug,
+  refreshVerification,
   slugTaken,
+  updateApplication,
   type CreateApplicationInput,
 } from "@/lib/applications";
 import { mailConfigured, sendVerificationEmail } from "@/lib/mail";
@@ -52,14 +54,61 @@ export async function POST(req: Request) {
   if (applicantPhone && !isValidPhone(applicantPhone)) {
     return NextResponse.json({ error: "เบอร์โทรผู้สมัครต้องเป็น 10 หลัก ขึ้นต้นด้วย 0" }, { status: 400 });
   }
-  if (await slugTaken(slug)) {
-    return NextResponse.json({ error: "slug นี้มีคนใช้แล้ว หรือรอตรวจสอบอยู่" }, { status: 409 });
+
+  const existing = await findPendingByEmail(email);
+
+  // มีคำขอรอยืนยันอีเมล → ส่งลิงก์ใหม่ (ไม่บล็อก)
+  if (existing?.status === "pending_verification") {
+    if (await slugTaken(slug, existing.id)) {
+      return NextResponse.json({ error: "slug นี้มีคนใช้แล้ว หรือรอตรวจสอบอยู่" }, { status: 409 });
+    }
+    const refreshed = await refreshVerification(existing.id);
+    if (!refreshed) {
+      return NextResponse.json({ error: "อัปเดตคำขอไม่สำเร็จ" }, { status: 500 });
+    }
+    const app =
+      (await updateApplication(refreshed.id, {
+        name,
+        phone,
+        address,
+        slug,
+        plan,
+        applicantFirstName,
+        applicantLastName,
+        applicantPhone,
+        applicantAddress,
+      })) || refreshed;
+    const mail = await sendVerificationEmail(app);
+    if (!mail.ok) {
+      return NextResponse.json(
+        { error: "ส่งอีเมลยืนยันไม่สำเร็จ กรุณาลองใหม่หรือติดต่อทีมงาน", detail: mail.error },
+        { status: 502 }
+      );
+    }
+    return NextResponse.json({
+      ok: true,
+      id: app.id,
+      email: app.email,
+      resent: true,
+      mailMode: mail.mode,
+      mailConfigured: mailConfigured(),
+      message: "ส่งลิงก์ยืนยันใหม่ไปที่อีเมลแล้ว กรุณาเปิดอีเมลและกดยืนยัน",
+    });
   }
-  if (await emailPending(email)) {
+
+  // ยืนยันอีเมลแล้ว รอแอดมินตรวจ
+  if (existing?.status === "pending_review") {
     return NextResponse.json(
-      { error: "อีเมลนี้มีคำขอที่รออยู่แล้ว กรุณาตรวจกล่องจดหมายหรือรอการอนุมัติ" },
+      {
+        error:
+          "อีเมลนี้ยืนยันแล้ว และอยู่ในคิวรอตรวจสอบ (ไม่เกิน 24 ชม.) กรุณารออีเมลแจ้ง username จากทีมงาน",
+      },
       { status: 409 }
     );
+  }
+
+  if (await slugTaken(slug)) {
+    return NextResponse.json({ error: "slug นี้มีคนใช้แล้ว หรือรอตรวจสอบอยู่" }, { status: 409 });
   }
 
   const app = await createApplication({

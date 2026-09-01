@@ -83,7 +83,7 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
     }
     onMsg(
       action === "reject"
-        ? "ปฏิเสธคำขอแล้ว"
+        ? "ปฏิเสธ / ยกเลิกคำขอแล้ว — ผู้สมัครสามารถกรอกฟอร์มใหม่ได้"
         : "ส่งอีเมล username + คู่มือแล้ว · อย่าลืมสร้างร้านในแอพ Admin ด้วยข้อมูลชุดเดียวกัน"
     );
     setSelected(data.application || null);
@@ -191,24 +191,30 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
             </div>
           </dl>
 
-          {(selected.status === "pending_review" || selected.status === "approved") && (
+          {(selected.status === "pending_verification" ||
+            selected.status === "pending_review" ||
+            selected.status === "approved") && (
             <div className="border-t border-gray-100 pt-4 space-y-3">
-              <label className="block">
-                <span className="text-xs font-medium text-gray-500">Username ที่จะส่ง</span>
-                <input
-                  className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </label>
-              <label className="block">
-                <span className="text-xs font-medium text-gray-500">รหัสผ่านเริ่มต้น (ตรงกับที่สร้างในแอพ)</span>
-                <input
-                  className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </label>
+              {(selected.status === "pending_review" || selected.status === "approved") && (
+                <>
+                  <label className="block">
+                    <span className="text-xs font-medium text-gray-500">Username ที่จะส่ง</span>
+                    <input
+                      className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </label>
+                  <label className="block">
+                    <span className="text-xs font-medium text-gray-500">รหัสผ่านเริ่มต้น (ตรงกับที่สร้างในแอพ)</span>
+                    <input
+                      className="mt-1 w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </label>
+                </>
+              )}
               <label className="block">
                 <span className="text-xs font-medium text-gray-500">โน้ตแอดมิน</span>
                 <textarea
@@ -219,24 +225,27 @@ export default function AdminApplications({ onMsg }: { onMsg: (m: string) => voi
               </label>
               <div className="flex flex-wrap gap-2 pt-1">
                 {selected.status === "pending_review" && (
-                  <>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => act("approve")}
-                      className="px-4 py-2 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 disabled:opacity-50"
-                    >
-                      อนุมัติ + ส่งอีเมล
-                    </button>
-                    <button
-                      type="button"
-                      disabled={busy}
-                      onClick={() => act("reject")}
-                      className="px-4 py-2 rounded-xl border border-red-200 text-red-600 text-sm font-semibold hover:bg-red-50 disabled:opacity-50"
-                    >
-                      ปฏิเสธ
-                    </button>
-                  </>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => act("approve")}
+                    className="px-4 py-2 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 disabled:opacity-50"
+                  >
+                    อนุมัติ + ส่งอีเมล
+                  </button>
+                )}
+                {(selected.status === "pending_verification" ||
+                  selected.status === "pending_review") && (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => act("reject")}
+                    className="px-4 py-2 rounded-xl border border-red-200 text-red-600 text-sm font-semibold hover:bg-red-50 disabled:opacity-50"
+                  >
+                    {selected.status === "pending_verification"
+                      ? "ยกเลิกคำขอ (ให้สมัครใหม่ได้)"
+                      : "ปฏิเสธ"}
+                  </button>
                 )}
                 {selected.status === "approved" && (
                   <button

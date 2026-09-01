@@ -120,6 +120,31 @@ export async function emailPending(email: string) {
   );
 }
 
+export async function findPendingByEmail(email: string) {
+  const e = email.trim().toLowerCase();
+  const store = await readStore();
+  return (
+    store.applications.find(
+      (a) =>
+        a.email.toLowerCase() === e &&
+        (a.status === "pending_verification" || a.status === "pending_review")
+    ) || null
+  );
+}
+
+/** สร้าง token ยืนยันใหม่ (ใช้เมื่อส่งอีเมลซ้ำ) */
+export async function refreshVerification(appId: string) {
+  const token = randomBytes(24).toString("hex");
+  const expires = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+  return updateApplication(appId, {
+    status: "pending_verification",
+    emailVerified: false,
+    verifyToken: token,
+    verifyExpiresAt: expires,
+    verifiedAt: null,
+  });
+}
+
 export type CreateApplicationInput = {
   name: string;
   phone: string;
