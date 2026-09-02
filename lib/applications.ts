@@ -113,6 +113,29 @@ export async function slugTaken(slug: string, exceptId?: string) {
   );
 }
 
+/** เบอร์โทรร้านซ้ำในคำขอที่ยังไม่ rejected (ว่าง = ไม่เช็ก) */
+export async function shopPhoneTaken(phone: string, exceptId?: string) {
+  const p = phone.trim();
+  if (!p) return false;
+  const store = await readStore();
+  return store.applications.some(
+    (a) => a.id !== exceptId && a.status !== "rejected" && a.phone.trim() === p
+  );
+}
+
+/** เบอร์โทรผู้สมัครซ้ำในคำขอที่ยังไม่ rejected (ว่าง = ไม่เช็ก) */
+export async function applicantPhoneTaken(phone: string, exceptId?: string) {
+  const p = phone.trim();
+  if (!p) return false;
+  const store = await readStore();
+  return store.applications.some(
+    (a) =>
+      a.id !== exceptId &&
+      a.status !== "rejected" &&
+      a.applicantPhone.trim() === p
+  );
+}
+
 export async function emailPending(email: string) {
   const e = email.trim().toLowerCase();
   const store = await readStore();

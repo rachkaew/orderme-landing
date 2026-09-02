@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import {
+  applicantPhoneTaken,
   createApplication,
   findActiveByEmail,
   findPendingByEmail,
@@ -7,6 +8,7 @@ import {
   isValidPhone,
   normalizeSlug,
   refreshVerification,
+  shopPhoneTaken,
   slugTaken,
   updateApplication,
   type CreateApplicationInput,
@@ -64,6 +66,20 @@ export async function POST(req: Request) {
 
   const existing = await findPendingByEmail(email);
   const active = await findActiveByEmail(email);
+  const exceptId = existing?.id;
+
+  if (phone && (await shopPhoneTaken(phone, exceptId))) {
+    return NextResponse.json(
+      { error: "เบอร์โทรร้านนี้ถูกใช้สมัครแล้ว หรือมีคำขอรออยู่" },
+      { status: 409 }
+    );
+  }
+  if (applicantPhone && (await applicantPhoneTaken(applicantPhone, exceptId))) {
+    return NextResponse.json(
+      { error: "เบอร์โทรผู้สมัครนี้ถูกใช้สมัครแล้ว หรือมีคำขอรออยู่" },
+      { status: 409 }
+    );
+  }
 
   // อีเมลนี้เคยอนุมัติแล้ว → ห้ามสมัครซ้ำ
   if (active?.status === "approved") {
