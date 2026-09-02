@@ -8,7 +8,6 @@ import {
   isValidPhone,
   normalizeSlug,
   refreshVerification,
-  shopPhoneTaken,
   slugTaken,
   updateApplication,
   type CreateApplicationInput,
@@ -68,12 +67,7 @@ export async function POST(req: Request) {
   const active = await findActiveByEmail(email);
   const exceptId = existing?.id;
 
-  if (phone && (await shopPhoneTaken(phone, exceptId))) {
-    return NextResponse.json(
-      { error: "เบอร์โทรร้านนี้ถูกใช้สมัครแล้ว หรือมีคำขอรออยู่" },
-      { status: 409 }
-    );
-  }
+  // เบอร์ร้านซ้ำได้ (เจ้าของคนเดียวหลายร้าน) — ไม่บล็อก shop phone
   if (applicantPhone && (await applicantPhoneTaken(applicantPhone, exceptId))) {
     return NextResponse.json(
       { error: "เบอร์โทรผู้สมัครนี้ถูกใช้สมัครแล้ว หรือมีคำขอรออยู่" },
